@@ -90,3 +90,34 @@ All errors use a consistent JSON shape:
 Registration passwords must be at least 8 characters and contain at least one uppercase letter,
 one lowercase letter, and one digit (e.g. `Admin123!`). Login only requires a non-empty
 password — complexity is only enforced at registration time.
+
+## Catalogue
+
+| Method | Path                      | Auth required | Description                                        |
+| ------ | ------------------------- | ------------- | -------------------------------------------------- |
+| GET    | `/api/products`           | none          | List active products (search/filter/sort/paginate) |
+| GET    | `/api/products/:idOrSlug` | none          | Fetch a single active product by id or slug        |
+| GET    | `/api/categories`         | none          | List all categories with active product counts     |
+
+`GET /api/products` query params (all optional):
+
+| Param      | Type                                  | Default | Notes                                                                         |
+| ---------- | ------------------------------------- | ------- | ----------------------------------------------------------------------------- |
+| `search`   | string                                | —       | Matches product name via a `contains` filter                                  |
+| `category` | string                                | —       | Numeric string (`/^\d+$/`) filters by category id, otherwise by category slug |
+| `sort`     | `price-asc` \| `price-desc` \| `name` | `name`  | Secondary `id: 'asc'` sort keeps ordering deterministic                       |
+| `page`     | integer ≥ 1                           | `1`     |                                                                               |
+| `limit`    | integer 1–100                         | `12`    |                                                                               |
+
+Response shape: `{ items, page, limit, totalItems, totalPages }`, where each item includes a nested
+`category: { id, name, slug }`.
+
+- An unknown `category` (id or slug with no matching row) returns a normal `200` with an empty
+  `items` array and `totalItems: 0`, not a 404 — it's treated as "no products match this filter"
+  rather than an invalid request.
+- `GET /api/products/:idOrSlug` returns `404 NOT_FOUND` with the same body whether the product
+  doesn't exist at all or exists but is inactive — the two cases are indistinguishable to callers.
+- `GET /api/categories` counts are active-product-only (`productCount`), since this reflects what
+  the storefront nav should actually show shoppers.
+- `search` case-insensitivity relies on SQLite's `LIKE`, which is only case-insensitive for ASCII
+  characters; Prisma's `mode: 'insensitive'` option is not supported on SQLite.

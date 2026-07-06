@@ -4,6 +4,8 @@ import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
 import { requestLogger } from './middleware/request-logger.js';
 import { adminRouter } from './routes/admin.js';
 import { authRouter } from './routes/auth.js';
+import { categoriesRouter } from './routes/categories.js';
+import { productsRouter } from './routes/products.js';
 
 export const app: Express = express();
 
@@ -17,6 +19,8 @@ app.get('/api/health', (_req, res) => {
 
 app.use('/api/auth', authRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/products', productsRouter);
+app.use('/api/categories', categoriesRouter);
 
 app.use('/api', notFoundHandler);
 app.use(errorHandler);
