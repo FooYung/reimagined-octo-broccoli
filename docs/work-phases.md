@@ -13,7 +13,7 @@ Source spec: `Claude_PC_Hardware_Ecommerce_Portfolio_Spec.md` (same directory). 
 ## Status Tracker
 
 - [x] Phase 1 — Repository & Tooling Scaffold
-- [ ] Phase 2 — Database Schema & Seed Data
+- [x] Phase 2 — Database Schema & Seed Data
 - [ ] Phase 3 — Backend: Auth API
 - [ ] Phase 4 — Backend: Catalogue API
 - [ ] Phase 5 — Backend: Basket, Checkout & Orders API

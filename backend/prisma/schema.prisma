@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// NOTE: SQLite does not support native enums. `User.role` and `Order.status`
+// are plain strings whose allowed values are enforced at the application
+// level via backend/src/domain/constants.ts (USER_ROLES / ORDER_STATUSES).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   @default("CUSTOMER")
+  createdAt    DateTime @default(now())
+
+  basket Basket?
+  orders Order[]
+}
+
+model Category {
+  id   Int    @id @default(autoincrement())
+  name String
+  slug String @unique
+
+  products Product[]
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String
+  slug        String   @unique
+  description String
+  pricePence  Int
+  stock       Int
+  isActive    Boolean  @default(true)
+  imageUrl    String
+  categoryId  Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category    Category     @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  basketItems BasketItem[]
+  orderItems  OrderItem[]
+}
+
+model Basket {
+  id     Int @id @default(autoincrement())
+  userId Int @unique
+
+  user  User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items BasketItem[]
+}
+
+model BasketItem {
+  id        Int @id @default(autoincrement())
+  basketId  Int
+  productId Int
+  quantity  Int
+
+  basket  Basket  @relation(fields: [basketId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@unique([basketId, productId])
+}
+
+model Order {
+  id               Int      @id @default(autoincrement())
+  orderNumber      String   @unique
+  userId           Int
+  status           String
+  totalPence       Int
+  shippingName     String
+  shippingLine1    String
+  shippingLine2    String?
+  shippingCity     String
+  shippingPostcode String
+  createdAt        DateTime @default(now())
+
+  user  User        @relation(fields: [userId], references: [id], onDelete: Restrict)
+  items OrderItem[]
+}
+
+model OrderItem {
+  id             Int    @id @default(autoincrement())
+  orderId        Int
+  productId      Int
+  productName    String
+  unitPricePence Int
+  quantity       Int
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+}
