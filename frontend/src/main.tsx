@@ -8,6 +8,8 @@ import PagePlaceholder from './components/PagePlaceholder.tsx';
 import RequireAuth from './components/RequireAuth.tsx';
 import RequireAdmin from './components/RequireAdmin.tsx';
 import HomePage from './pages/HomePage.tsx';
+import CataloguePage from './pages/CataloguePage.tsx';
+import ProductDetailPage from './pages/ProductDetailPage.tsx';
 import LoginPage from './pages/LoginPage.tsx';
 import RegisterPage from './pages/RegisterPage.tsx';
 import NotFoundPage from './pages/NotFoundPage.tsx';
@@ -18,8 +20,8 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { index: true, element: <HomePage /> },
-      { path: 'products', element: <PagePlaceholder title="Products" /> },
-      { path: 'products/:slug', element: <PagePlaceholder title="Product" /> },
+      { path: 'products', element: <CataloguePage /> },
+      { path: 'products/:slug', element: <ProductDetailPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'register', element: <RegisterPage /> },
       {

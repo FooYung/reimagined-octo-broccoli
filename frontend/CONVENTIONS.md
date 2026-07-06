@@ -27,6 +27,27 @@ appended when the element repeats for each item in a list.
 | `forbidden-page`                | 403 access-denied page container           |
 | `header-logout-button`          | Header sign-out button                     |
 | `header-admin-link`             | Header link to `/admin` (admin users only) |
+| `catalogue-heading`             | Catalogue page heading                     |
+| `catalogue-clear-search`        | Catalogue button clearing the search param |
+| `catalogue-category-select`     | Catalogue category filter select           |
+| `catalogue-sort-select`         | Catalogue sort select                      |
+| `catalogue-result-count`        | Catalogue result count text                |
+| `catalogue-grid`                | Catalogue product grid                     |
+| `catalogue-loading`             | Catalogue loading skeleton                 |
+| `catalogue-empty`               | Catalogue empty-results state              |
+| `catalogue-clear-filters`       | Catalogue button clearing all filters      |
+| `catalogue-prev`                | Catalogue pagination previous button       |
+| `catalogue-page-info`           | Catalogue pagination page indicator        |
+| `catalogue-next`                | Catalogue pagination next button           |
+| `product-detail`                | Product detail page container              |
+| `product-detail-loading`        | Product detail loading skeleton            |
+| `product-detail-category-link`  | Product detail link to its category        |
+| `product-detail-name`           | Product detail name heading                |
+| `product-detail-price`          | Product detail price                       |
+| `product-detail-stock`          | Product detail stock status                |
+| `product-detail-description`    | Product detail description                 |
+| `product-detail-qty-input`      | Product detail quantity input              |
+| `product-detail-add-button`     | Product detail add-to-basket button        |
 
 Rules:
 
