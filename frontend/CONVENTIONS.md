@@ -5,15 +5,28 @@
 Format: kebab-case `{area}-{element}`, with a `-{slug}` (or other identifying) suffix
 appended when the element repeats for each item in a list.
 
-| testid                          | Element                                   |
-| ------------------------------- | ----------------------------------------- |
-| `header-search-input`           | Header search text input                  |
-| `header-search-submit`          | Header search submit button               |
-| `header-basket-link`            | Header link to `/basket`                  |
-| `nav-category-link-cpus`        | Category nav link for the "cpus" category |
-| `product-card-amd-ryzen-5-7600` | Product card link for that product's slug |
-| `error-state`                   | Error message container                   |
-| `home-featured-loading`         | Loading skeleton for the featured section |
+| testid                          | Element                                    |
+| ------------------------------- | ------------------------------------------ |
+| `header-search-input`           | Header search text input                   |
+| `header-search-submit`          | Header search submit button                |
+| `header-basket-link`            | Header link to `/basket`                   |
+| `nav-category-link-cpus`        | Category nav link for the "cpus" category  |
+| `product-card-amd-ryzen-5-7600` | Product card link for that product's slug  |
+| `error-state`                   | Error message container                    |
+| `home-featured-loading`         | Loading skeleton for the featured section  |
+| `login-email-input`             | Login form email input                     |
+| `login-password-input`          | Login form password input                  |
+| `login-email-error`             | Login form email field error message       |
+| `login-submit`                  | Login form submit button                   |
+| `login-error`                   | Login form server-error message            |
+| `login-register-link`           | Login page link to `/register`             |
+| `register-name-input`           | Register form name input                   |
+| `register-submit`               | Register form submit button                |
+| `register-error`                | Register form server-error message         |
+| `register-login-link`           | Register page link to `/login`             |
+| `forbidden-page`                | 403 access-denied page container           |
+| `header-logout-button`          | Header sign-out button                     |
+| `header-admin-link`             | Header link to `/admin` (admin users only) |
 
 Rules:
 

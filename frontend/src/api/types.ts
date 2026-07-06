@@ -33,6 +33,13 @@ export interface ProductListResponse {
   totalPages: number;
 }
 
+export interface User {
+  id: number;
+  email: string;
+  name: string;
+  role: 'CUSTOMER' | 'ADMIN';
+}
+
 export interface ApiErrorBody {
   error: {
     code: string;

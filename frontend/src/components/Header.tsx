@@ -1,11 +1,20 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useCategories } from '../api/queries.ts';
+import { useCurrentUser, useLogout } from '../api/auth.ts';
 
 function Header() {
   const [search, setSearch] = useState('');
   const navigate = useNavigate();
   const { data: categories } = useCategories();
+  const { data: user, isLoading: isUserLoading } = useCurrentUser();
+  const logout = useLogout();
+
+  function handleLogout() {
+    logout.mutate(undefined, {
+      onSuccess: () => navigate('/'),
+    });
+  }
 
   function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -59,14 +68,45 @@ function Header() {
             </span>
           </Link>
 
-          {/* Links to /login until Phase 8 introduces real auth state. */}
-          <Link
-            to="/login"
-            data-testid="header-account-link"
-            className="rounded text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
-          >
-            Sign in
-          </Link>
+          <span className="flex min-w-[5rem] items-center gap-3">
+            {!isUserLoading &&
+              (user ? (
+                <>
+                  {user.role === 'ADMIN' && (
+                    <Link
+                      to="/admin"
+                      data-testid="header-admin-link"
+                      className="rounded text-xs font-medium text-slate-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+                    >
+                      Admin
+                    </Link>
+                  )}
+                  <Link
+                    to="/account"
+                    data-testid="header-account-link"
+                    className="rounded text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+                  >
+                    {user.name}
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    data-testid="header-logout-button"
+                    className="rounded text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+                  >
+                    Sign out
+                  </button>
+                </>
+              ) : (
+                <Link
+                  to="/login"
+                  data-testid="header-account-link"
+                  className="rounded text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+                >
+                  Sign in
+                </Link>
+              ))}
+          </span>
         </div>
       </div>
 
