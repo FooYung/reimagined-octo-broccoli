@@ -2,7 +2,7 @@ import cookieParser from 'cookie-parser';
 import express, { type Express } from 'express';
 import { errorHandler, notFoundHandler } from './middleware/error-handler.js';
 import { requestLogger } from './middleware/request-logger.js';
-import { adminRouter } from './routes/admin.js';
+import { adminRouter } from './routes/admin/index.js';
 import { authRouter } from './routes/auth.js';
 import { basketRouter } from './routes/basket.js';
 import { categoriesRouter } from './routes/categories.js';

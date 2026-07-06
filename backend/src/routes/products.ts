@@ -6,9 +6,9 @@ import { prisma } from '../lib/prisma.js';
 
 export const productsRouter = express.Router();
 
-const ID_PATTERN = /^\d+$/;
+export const ID_PATTERN = /^\d+$/;
 
-const listQuerySchema = z.object({
+export const listQuerySchema = z.object({
   search: z.string().trim().optional(),
   category: z.string().optional(),
   sort: z.enum(['price-asc', 'price-desc', 'name']).default('name'),
@@ -16,7 +16,7 @@ const listQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(12),
 });
 
-const productSelect = {
+export const productSelect = {
   id: true,
   name: true,
   slug: true,

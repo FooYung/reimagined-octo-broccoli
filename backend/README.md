@@ -236,3 +236,122 @@ The whole flow runs inside one interactive `prisma.$transaction`:
 | `EMPTY_BASKET`       | 400    | Checkout attempted with no basket or zero items                                       |
 | `STOCK_CONFLICT`     | 400    | One or more basket items are unavailable/understocked at checkout; includes `details` |
 | `NOT_FOUND`          | 404    | Product/basket item/order not found (see semantics above)                             |
+
+## Admin API
+
+All endpoints below live under `/api/admin` and require the requesting user to be authenticated
+**and** hold the `ADMIN` role (`adminRouter` applies `requireAuth, requireAdmin` once, at the top,
+to everything mounted under it). An unauthenticated request gets `401 UNAUTHENTICATED`; an
+authenticated non-admin (e.g. a CUSTOMER) gets `403 FORBIDDEN` — on every route in this section,
+including `GET /ping`.
+
+| Method | Path                           | Description                                                             |
+| ------ | ------------------------------ | ----------------------------------------------------------------------- |
+| GET    | `/api/admin/ping`              | `{ status: 'ok' }` — cheap endpoint for auth-matrix checks              |
+| GET    | `/api/admin/products`          | List all products (active + inactive), same filters as public catalogue |
+| POST   | `/api/admin/products`          | Create a product                                                        |
+| PATCH  | `/api/admin/products/:id`      | Partially update a product                                              |
+| DELETE | `/api/admin/products/:id`      | Delete a product (blocked if it has ever been ordered)                  |
+| GET    | `/api/admin/categories`        | List all categories with total (active + inactive) product counts       |
+| POST   | `/api/admin/categories`        | Create a category                                                       |
+| PATCH  | `/api/admin/categories/:id`    | Rename a category                                                       |
+| DELETE | `/api/admin/categories/:id`    | Delete a category (blocked if it has any products)                      |
+| GET    | `/api/admin/orders`            | List all orders (every user), optionally filtered by status             |
+| PATCH  | `/api/admin/orders/:id/status` | Advance an order's status                                               |
+
+### Admin products
+
+`GET /api/admin/products` shares its query contract (`search`, `category`, `sort`, `page`, `limit`)
+and response shape (`{ items, page, limit, totalItems, totalPages }`, each item with a nested
+`category`) with the public `GET /api/products` — the query schema, `productSelect`, and
+`ID_PATTERN` are exported from `routes/products.ts` and reused here. The one difference: there is
+no `isActive` filter, so admins see inactive products too.
+
+`POST /api/admin/products` body:
+
+| Field         | Type    | Rules                               |
+| ------------- | ------- | ----------------------------------- |
+| `name`        | string  | trimmed, 1–200 chars                |
+| `description` | string  | trimmed, 1–2000 chars               |
+| `pricePence`  | integer | > 0                                 |
+| `stock`       | integer | ≥ 0                                 |
+| `categoryId`  | integer | must reference an existing category |
+| `imageUrl`    | string  | optional, trimmed, 1–500 chars      |
+| `isActive`    | boolean | optional                            |
+
+- An unknown `categoryId` returns `400 VALIDATION_ERROR` with
+  `details: [{ field: 'categoryId', message: 'Unknown category' }]`.
+- The slug is generated from `name` via `slugify()` (`src/lib/slug.ts`: lowercase, non-alphanumeric
+  runs collapsed to a single `-`, leading/trailing `-` stripped). A slug collision returns
+  `409 SLUG_IN_USE`.
+- `imageUrl` defaults to `/images/products/{slug}.jpg` when omitted; `isActive` defaults to `true`.
+- Response: `201` with the same item shape as the catalogue (incl. nested `category`).
+
+`PATCH /api/admin/products/:id` accepts any subset of the same fields (all optional). An empty
+body (`{}`) is rejected with `400 VALIDATION_ERROR` ("No fields to update"), since it's not a
+meaningful request. **Renaming a product does not regenerate its slug** — slugs are assigned once,
+at creation, and kept stable afterwards so product URLs (and anything that links to them) don't
+break just because the display name changed. A non-numeric `:id` is `400 VALIDATION_ERROR`; a
+well-formed but non-existent id is `404 NOT_FOUND`.
+
+`DELETE /api/admin/products/:id`:
+
+- If the product appears in any `OrderItem` (i.e. it has ever been ordered), the delete is refused
+  with `409 PRODUCT_IN_USE` ("Product has been ordered; deactivate it instead") — order history
+  must never be able to dangle a reference to a deleted product. Use `PATCH .../isActive=false`
+  instead.
+- Otherwise, the product's `BasketItem` rows are deleted first (baskets are current/ephemeral
+  state, safe to clean up), then the product itself, in one transaction → `204`.
+- Unknown id → `404 NOT_FOUND`.
+
+### Admin categories
+
+`GET /api/admin/categories` returns all categories, name-ascending, as
+`{ id, name, slug, productCount }` — **unlike** the public `GET /api/categories`, `productCount`
+here includes inactive products, since an admin managing inventory needs to see categories whose
+only stock is currently deactivated.
+
+`POST /api/admin/categories` takes `{ name }` (trimmed, 1–100 chars), slugifies it the same way as
+products, and returns `201 { id, name, slug }`. A slug collision is `409 SLUG_IN_USE`.
+
+`PATCH /api/admin/categories/:id` takes `{ name }` and renames the category — **the slug is never
+changed**, same stable-URL reasoning as product renames. Unknown id → `404 NOT_FOUND`.
+
+`DELETE /api/admin/categories/:id` is refused with `409 CATEGORY_IN_USE` ("Category has products;
+move or delete them first") if the category has any products (active or inactive) — a category
+can't be removed out from under products that reference it. Otherwise `204`. Unknown id →
+`404 NOT_FOUND`.
+
+### Admin orders
+
+`GET /api/admin/orders` lists every order across all users (not just the caller's), newest first
+(`createdAt` desc, then `id` desc), with an optional `?status=` filter (must be one of the five
+`ORDER_STATUSES` values, otherwise `400 VALIDATION_ERROR`). Each item is the same shape as
+`GET /api/orders/:id` plus a `customer: { id, email, name }` field identifying the order's owner.
+
+`PATCH /api/admin/orders/:id/status` takes `{ status }` and advances the order through a fixed
+state machine:
+
+```
+PENDING → PROCESSING → SHIPPED → DELIVERED
+   ↓            ↓
+CANCELLED   CANCELLED
+```
+
+Only the transitions drawn above are allowed — this includes rejecting a same-status "transition"
+(e.g. `PENDING` → `PENDING`) as a no-op, and `DELIVERED`/`CANCELLED` are terminal (no transitions
+out of either). Any other transition (including backwards ones) is `400 INVALID_STATUS_TRANSITION`
+with a message like `"Cannot change status from DELIVERED to PENDING"`. Unknown id → `404 NOT_FOUND`.
+
+- **Cancelling an order does not restock its items.** This is a documented simplification for this
+  project's scope, not an oversight — a future improvement would return each `OrderItem`'s quantity
+  to the corresponding product's stock when an order is cancelled.
+
+### Error codes introduced in this section
+
+| Code                        | Status | Meaning                                                             |
+| --------------------------- | ------ | ------------------------------------------------------------------- |
+| `SLUG_IN_USE`               | 409    | A product/category with the generated slug already exists           |
+| `PRODUCT_IN_USE`            | 409    | Product delete refused because it appears in existing order items   |
+| `CATEGORY_IN_USE`           | 409    | Category delete refused because it still has products               |
+| `INVALID_STATUS_TRANSITION` | 400    | Requested order status change isn't allowed from the current status |

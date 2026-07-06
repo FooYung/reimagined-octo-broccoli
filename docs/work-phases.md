@@ -17,7 +17,7 @@ Source spec: `Claude_PC_Hardware_Ecommerce_Portfolio_Spec.md` (same directory). 
 - [x] Phase 3 — Backend: Auth API
 - [x] Phase 4 — Backend: Catalogue API
 - [x] Phase 5 — Backend: Basket, Checkout & Orders API
-- [ ] Phase 6 — Backend: Admin API
+- [x] Phase 6 — Backend: Admin API
 - [ ] Phase 7 — Frontend: App Shell & Branding
 - [ ] Phase 8 — Frontend: Auth Pages
 - [ ] Phase 9 — Frontend: Catalogue Pages
