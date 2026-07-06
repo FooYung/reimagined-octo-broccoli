@@ -121,3 +121,118 @@ Response shape: `{ items, page, limit, totalItems, totalPages }`, where each ite
   the storefront nav should actually show shoppers.
 - `search` case-insensitivity relies on SQLite's `LIKE`, which is only case-insensitive for ASCII
   characters; Prisma's `mode: 'insensitive'` option is not supported on SQLite.
+
+## Basket, checkout & orders
+
+| Method | Path                           | Auth required | Description                                    |
+| ------ | ------------------------------ | ------------- | ---------------------------------------------- |
+| GET    | `/api/basket`                  | cookie        | Get the current user's basket                  |
+| POST   | `/api/basket/items`            | cookie        | Add a product to the basket (upsert-increment) |
+| PATCH  | `/api/basket/items/:productId` | cookie        | Set an item's quantity                         |
+| DELETE | `/api/basket/items/:productId` | cookie        | Remove a single item                           |
+| DELETE | `/api/basket`                  | cookie        | Clear the whole basket                         |
+| POST   | `/api/checkout`                | cookie        | Place an order from the current basket         |
+| GET    | `/api/orders`                  | cookie        | List the current user's orders, newest first   |
+| GET    | `/api/orders/:id`              | cookie        | Fetch a single order owned by the current user |
+
+### Basket shape
+
+```json
+{
+  "items": [
+    {
+      "productId": 5,
+      "name": "AMD Ryzen 5 7600",
+      "slug": "amd-ryzen-5-7600",
+      "pricePence": 17999,
+      "stock": 40,
+      "isActive": true,
+      "imageUrl": "/images/products/amd-ryzen-5-7600.jpg",
+      "quantity": 2,
+      "lineTotalPence": 35998
+    }
+  ],
+  "totalPence": 35998
+}
+```
+
+- `pricePence`/`stock`/`isActive` reflect the product's **current** values — the basket always
+  shows live data, and checkout re-validates against the same current values at the point of
+  purchase.
+- Items are ordered by the underlying `BasketItem.id` ascending (insertion order).
+- A user with no `Basket` row yet gets `{ items: [], totalPence: 0 }` without one being created;
+  the row is only created lazily on the first `POST /api/basket/items`.
+- Every basket mutation (`POST`/`PATCH`/`DELETE`) responds `200` with the full updated basket
+  shape, the same as `GET /api/basket`.
+- Adding or updating an item requires the product to exist **and** be active — an unknown id and
+  an inactive product both return the same `404 NOT_FOUND` (as in the catalogue), and the
+  resulting quantity must not exceed the product's current stock (`400 INSUFFICIENT_STOCK`,
+  message includes the available stock). A stock-0 product can therefore never be added.
+- `PATCH`/`DELETE` on a product not already in the basket return `404 NOT_FOUND` ("Item not in
+  basket"), distinct from the "Product not found" case above.
+
+### Checkout flow
+
+`POST /api/checkout` takes **shipping address fields only** — there are no payment fields.
+Payment is mocked as always-successful (no real payment integration in this project).
+
+The whole flow runs inside one interactive `prisma.$transaction`:
+
+1. Load the user's basket + items + products. An empty or missing basket → `400 EMPTY_BASKET`.
+2. Re-validate every item against current data: an inactive product fails with reason
+   `unavailable`; a quantity exceeding current stock fails with reason
+   `insufficient stock (N available)`. Any failures → `400 STOCK_CONFLICT` with a `details` array
+   listing every failing item (`{ productId, slug, name, reason }`).
+3. Decrement stock per item with a conditional `updateMany` (`stock: { gte: quantity }`). If the
+   row count isn't exactly 1, another checkout raced ahead of this one between steps 1–2 and this
+   step — the same `400 STOCK_CONFLICT` shape is thrown as a belt-and-braces guard against that
+   race, this time reflecting the just-read current stock.
+4. Create the `Order` (status `PENDING`) with `totalPence` computed from **current** product
+   prices, snapshotting `productName` + `unitPricePence` onto each `OrderItem` so historical
+   orders are unaffected by later price changes. The order is created with a placeholder
+   `orderNumber`, then updated to `ORD-${1000 + order.id}` once the id is known (the seeded
+   `ORD-1001` = id `1` fits this numbering scheme).
+5. Delete the basket's items (the `Basket` row itself is kept).
+6. Return `201` with the same order shape used by `GET /api/orders`.
+
+### Order shape
+
+```json
+{
+  "id": 2,
+  "orderNumber": "ORD-1002",
+  "status": "PENDING",
+  "totalPence": 17999,
+  "createdAt": "2026-07-06T20:47:07.239Z",
+  "shippingName": "Sam Customer",
+  "shippingLine1": "123 Test St",
+  "shippingLine2": null,
+  "shippingCity": "Testville",
+  "shippingPostcode": "TE5 7ST",
+  "items": [
+    {
+      "productId": 5,
+      "productName": "AMD Ryzen 5 7600",
+      "unitPricePence": 17999,
+      "quantity": 1,
+      "lineTotalPence": 17999
+    }
+  ]
+}
+```
+
+- `GET /api/orders` returns the current user's orders ordered by `createdAt` desc, then `id` desc.
+- `GET /api/orders/:id` requires a numeric id; a non-numeric id is treated as not found rather than
+  a separate validation error, since it could never match a real order.
+- An order that doesn't exist, or belongs to a different user, always returns `404 NOT_FOUND`
+  ("Order not found") — **never** `403` — so a request can't be used to probe whether an order id
+  belongs to someone else.
+
+### Error codes introduced in this section
+
+| Code                 | Status | Meaning                                                                               |
+| -------------------- | ------ | ------------------------------------------------------------------------------------- |
+| `INSUFFICIENT_STOCK` | 400    | Requested basket quantity exceeds current product stock                               |
+| `EMPTY_BASKET`       | 400    | Checkout attempted with no basket or zero items                                       |
+| `STOCK_CONFLICT`     | 400    | One or more basket items are unavailable/understocked at checkout; includes `details` |
+| `NOT_FOUND`          | 404    | Product/basket item/order not found (see semantics above)                             |
