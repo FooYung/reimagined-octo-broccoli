@@ -109,6 +109,66 @@ appended when the element repeats for each item in a list.
 | `order-detail-total`            | Order detail page total                    |
 | `order-detail-address`          | Order detail page shipping address container |
 | `order-detail-back-link`        | Order detail page link to `/account`       |
+| `admin-page`                    | Admin section container                    |
+| `admin-nav-products`            | Admin nav link to `/admin/products`        |
+| `admin-nav-categories`          | Admin nav link to `/admin/categories`      |
+| `admin-nav-orders`              | Admin nav link to `/admin/orders`          |
+| `admin-products-search`         | Admin products search text input           |
+| `admin-products-loading`        | Admin products loading skeleton            |
+| `admin-products-new-button`     | Admin products button opening the create form |
+| `admin-products-table`          | Admin products table                        |
+| `admin-product-row-{slug}`      | Admin products table row for that product's slug |
+| `admin-product-inactive-{slug}` | Admin products row inactive status badge    |
+| `admin-product-edit-{slug}`     | Admin products row edit button              |
+| `admin-product-toggle-{slug}`   | Admin products row activate/deactivate button |
+| `admin-product-delete-{slug}`   | Admin products row delete button (step 1)   |
+| `admin-product-delete-confirm-{slug}` | Admin products row delete confirm button (step 2) |
+| `admin-product-delete-cancel-{slug}` | Admin products row delete cancel button      |
+| `admin-products-error`          | Admin products page-level server-error message |
+| `admin-products-prev`           | Admin products pagination previous button   |
+| `admin-products-page-info`      | Admin products pagination page indicator    |
+| `admin-products-next`           | Admin products pagination next button       |
+| `admin-product-form`            | Admin product create/edit form panel        |
+| `admin-product-name-input`      | Admin product form name input               |
+| `admin-product-name-error`      | Admin product form name field error         |
+| `admin-product-description-input` | Admin product form description textarea   |
+| `admin-product-description-error` | Admin product form description field error |
+| `admin-product-price-input`     | Admin product form price (pounds) input     |
+| `admin-product-price-error`     | Admin product form price field error        |
+| `admin-product-stock-input`     | Admin product form stock input              |
+| `admin-product-stock-error`     | Admin product form stock field error        |
+| `admin-product-category-select` | Admin product form category select          |
+| `admin-product-category-error`  | Admin product form category field error     |
+| `admin-product-active-checkbox` | Admin product form active checkbox          |
+| `admin-product-form-submit`     | Admin product form submit button             |
+| `admin-product-form-cancel`     | Admin product form cancel button             |
+| `admin-product-form-error`      | Admin product form server-error message      |
+| `admin-category-name-input`     | Admin categories create-form name input      |
+| `admin-category-name-error`     | Admin categories create-form name field error |
+| `admin-category-create-button`  | Admin categories create-form submit button   |
+| `admin-categories-error`        | Admin categories page-level server-error message |
+| `admin-categories-loading`      | Admin categories loading skeleton            |
+| `admin-categories-table`        | Admin categories table                       |
+| `admin-category-row-{slug}`     | Admin categories table row for that category's slug |
+| `admin-category-count-{slug}`   | Admin categories row product count           |
+| `admin-category-rename-{slug}`  | Admin categories row rename button (enters rename mode) |
+| `admin-category-rename-input-{slug}` | Admin categories row rename text input   |
+| `admin-category-rename-save-{slug}` | Admin categories row rename save button   |
+| `admin-category-rename-cancel-{slug}` | Admin categories row rename cancel button |
+| `admin-category-delete-{slug}`  | Admin categories row delete button (step 1)  |
+| `admin-category-delete-confirm-{slug}` | Admin categories row delete confirm button (step 2) |
+| `admin-category-delete-cancel-{slug}` | Admin categories row delete cancel button  |
+| `admin-orders-status-filter`    | Admin orders status filter select            |
+| `admin-orders-loading`          | Admin orders loading skeleton                |
+| `admin-orders-empty`            | Admin orders empty-results state             |
+| `admin-orders-list`             | Admin orders list container                  |
+| `admin-order-row-{slug}`        | Admin orders row for that order's slug       |
+| `admin-order-expand-{slug}`     | Admin orders row expand/collapse button      |
+| `admin-order-customer-{slug}`   | Admin orders row customer email              |
+| `admin-order-status-{slug}`     | Admin orders row status                      |
+| `admin-order-detail-{slug}`     | Admin orders row expanded detail container   |
+| `admin-order-set-{status}-{slug}` | Admin orders row status-transition button (one per allowed status) |
+| `admin-order-error-{slug}`      | Admin orders row status-update error message |
 
 Rules:
 

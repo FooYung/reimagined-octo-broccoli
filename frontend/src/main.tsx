@@ -1,12 +1,12 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './index.css';
 import Layout from './components/Layout.tsx';
-import PagePlaceholder from './components/PagePlaceholder.tsx';
 import RequireAuth from './components/RequireAuth.tsx';
 import RequireAdmin from './components/RequireAdmin.tsx';
+import AdminLayout from './components/AdminLayout.tsx';
 import HomePage from './pages/HomePage.tsx';
 import CataloguePage from './pages/CataloguePage.tsx';
 import ProductDetailPage from './pages/ProductDetailPage.tsx';
@@ -17,6 +17,9 @@ import CheckoutPage from './pages/CheckoutPage.tsx';
 import OrderConfirmationPage from './pages/OrderConfirmationPage.tsx';
 import AccountPage from './pages/AccountPage.tsx';
 import OrderDetailPage from './pages/OrderDetailPage.tsx';
+import AdminProductsPage from './pages/admin/AdminProductsPage.tsx';
+import AdminCategoriesPage from './pages/admin/AdminCategoriesPage.tsx';
+import AdminOrdersPage from './pages/admin/AdminOrdersPage.tsx';
 import NotFoundPage from './pages/NotFoundPage.tsx';
 
 const router = createBrowserRouter([
@@ -41,7 +44,18 @@ const router = createBrowserRouter([
       },
       {
         element: <RequireAdmin />,
-        children: [{ path: 'admin', element: <PagePlaceholder title="Admin" /> }],
+        children: [
+          {
+            path: 'admin',
+            element: <AdminLayout />,
+            children: [
+              { index: true, element: <Navigate to="products" replace /> },
+              { path: 'products', element: <AdminProductsPage /> },
+              { path: 'categories', element: <AdminCategoriesPage /> },
+              { path: 'orders', element: <AdminOrdersPage /> },
+            ],
+          },
+        ],
       },
       { path: '*', element: <NotFoundPage /> },
     ],

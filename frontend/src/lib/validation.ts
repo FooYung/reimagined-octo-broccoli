@@ -53,3 +53,30 @@ export const checkoutSchema = z.object({
 });
 
 export type CheckoutFormValues = z.infer<typeof checkoutSchema>;
+
+export const productSchema = z.object({
+  name: z.string().trim().min(1, 'Name is required').max(200, 'Name must be at most 200 characters'),
+  description: z
+    .string()
+    .trim()
+    .min(1, 'Description is required')
+    .max(2000, 'Description must be at most 2000 characters'),
+  pricePounds: z.coerce
+    .number()
+    .positive('Price must be greater than 0')
+    .multipleOf(0.01, 'Price can have at most 2 decimal places'),
+  stock: z.coerce.number().int('Stock must be a whole number').min(0, 'Stock cannot be negative'),
+  categoryId: z.coerce.number().int().positive('Choose a category'),
+  isActive: z.boolean(),
+});
+
+export type ProductFormValues = z.infer<typeof productSchema>;
+// The raw, pre-coercion shape react-hook-form's useForm needs for its TFieldValues generic
+// (z.coerce fields accept `unknown` as input) — see AdminProductsPage's useForm call.
+export type ProductFormInput = z.input<typeof productSchema>;
+
+export const categorySchema = z.object({
+  name: z.string().trim().min(1, 'Name is required').max(100, 'Name must be at most 100 characters'),
+});
+
+export type CategoryFormValues = z.infer<typeof categorySchema>;

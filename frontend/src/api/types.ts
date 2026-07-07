@@ -73,10 +73,12 @@ export interface OrderItem {
   lineTotalPence: number;
 }
 
+export type OrderStatus = 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+
 export interface Order {
   id: number;
   orderNumber: string;
-  status: string;
+  status: OrderStatus;
   totalPence: number;
   createdAt: string;
   shippingName: string;
@@ -85,6 +87,10 @@ export interface Order {
   shippingCity: string;
   shippingPostcode: string;
   items: OrderItem[];
+}
+
+export interface AdminOrder extends Order {
+  customer: { id: number; email: string; name: string };
 }
 
 // Shape of each entry in a 400 STOCK_CONFLICT error's `details` — distinct from the
