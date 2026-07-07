@@ -24,7 +24,7 @@ Source spec: `Claude_PC_Hardware_Ecommerce_Portfolio_Spec.md` (same directory). 
 - [x] Phase 10 — Frontend: Basket & Checkout
 - [x] Phase 11 — Frontend: Customer Account & Order History
 - [x] Phase 12 — Frontend: Admin CMS
-- [ ] Phase 13 — Error Handling & Edge-Case Pass
+- [x] Phase 13 — Error Handling & Edge-Case Pass
 - [ ] Phase 14 — Playwright Framework Foundation
 - [ ] Phase 15 — Playwright API Tests
 - [ ] Phase 16 — Playwright UI Tests

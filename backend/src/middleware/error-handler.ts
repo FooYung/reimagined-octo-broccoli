@@ -38,6 +38,15 @@ export const errorHandler = (
     return;
   }
 
+  // express.json() rejects malformed request bodies with a SyntaxError carrying
+  // status 400 — a client error, not a server fault, so don't log it as one.
+  if (err instanceof SyntaxError && 'status' in err && (err as SyntaxError & { status?: number }).status === 400) {
+    res.status(400).json({
+      error: { code: 'INVALID_JSON', message: 'Request body is not valid JSON' },
+    });
+    return;
+  }
+
   console.error(err);
   res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: 'Internal server error' } });
 };

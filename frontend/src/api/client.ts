@@ -25,7 +25,14 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
     new Headers(init.headers).forEach((value, key) => headers.set(key, value));
   }
 
-  const response = await fetch(`/api${path}`, { ...init, headers });
+  let response: Response;
+  try {
+    response = await fetch(`/api${path}`, { ...init, headers });
+  } catch {
+    // fetch rejects with a TypeError when the server is unreachable; surface it in the
+    // same ApiError shape every error display in the app already understands.
+    throw new ApiError(0, 'NETWORK_ERROR', 'Could not reach the server. Please try again.');
+  }
 
   if (response.status === 204) {
     return undefined as T;
