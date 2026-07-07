@@ -15,6 +15,8 @@ import RegisterPage from './pages/RegisterPage.tsx';
 import BasketPage from './pages/BasketPage.tsx';
 import CheckoutPage from './pages/CheckoutPage.tsx';
 import OrderConfirmationPage from './pages/OrderConfirmationPage.tsx';
+import AccountPage from './pages/AccountPage.tsx';
+import OrderDetailPage from './pages/OrderDetailPage.tsx';
 import NotFoundPage from './pages/NotFoundPage.tsx';
 
 const router = createBrowserRouter([
@@ -33,7 +35,8 @@ const router = createBrowserRouter([
           { path: 'basket', element: <BasketPage /> },
           { path: 'checkout', element: <CheckoutPage /> },
           { path: 'checkout/confirmation', element: <OrderConfirmationPage /> },
-          { path: 'account', element: <PagePlaceholder title="Account" /> },
+          { path: 'account', element: <AccountPage /> },
+          { path: 'account/orders/:id', element: <OrderDetailPage /> },
         ],
       },
       {

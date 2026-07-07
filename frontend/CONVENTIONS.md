@@ -88,6 +88,27 @@ appended when the element repeats for each item in a list.
 | `confirmation-order-number`     | Order confirmation order number            |
 | `confirmation-total`            | Order confirmation total                   |
 | `confirmation-continue-link`    | Order confirmation link to `/products`     |
+| `account-page`                  | Account page container                    |
+| `account-name`                  | Account page customer name                 |
+| `account-email`                 | Account page customer email                |
+| `account-orders-loading`        | Account page order history loading skeleton |
+| `account-orders-empty`          | Account page order history empty state     |
+| `account-orders-browse-link`    | Account page empty-state link to `/products` |
+| `account-orders`                | Account page order history list container |
+| `account-order-link-{slug}`     | Account page order row link to `/account/orders/{id}` (slug = lowercased order number) |
+| `account-order-number-{slug}`   | Account page order row order number        |
+| `account-order-date-{slug}`     | Account page order row date                |
+| `account-order-status-{slug}`   | Account page order row status              |
+| `account-order-total-{slug}`    | Account page order row total               |
+| `order-detail-loading`          | Order detail page loading skeleton         |
+| `order-detail-page`             | Order detail page container                |
+| `order-detail-order-number`     | Order detail page order number heading     |
+| `order-detail-date`             | Order detail page order date                |
+| `order-detail-status`           | Order detail page order status              |
+| `order-detail-item-{productId}` | Order detail page item row for that product |
+| `order-detail-total`            | Order detail page total                    |
+| `order-detail-address`          | Order detail page shipping address container |
+| `order-detail-back-link`        | Order detail page link to `/account`       |
 
 Rules:
 
