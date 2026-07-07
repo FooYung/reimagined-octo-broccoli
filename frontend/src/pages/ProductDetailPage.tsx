@@ -1,6 +1,8 @@
 import { useState, type ChangeEvent } from 'react';
-import { Link, useParams } from 'react-router';
+import { Link, useLocation, useNavigate, useParams } from 'react-router';
 import { useProduct } from '../api/queries.ts';
+import { useAddToBasket } from '../api/basket.ts';
+import { useCurrentUser } from '../api/auth.ts';
 import { ApiError } from '../api/client.ts';
 import { formatPrice } from '../lib/format.ts';
 import ProductImage from '../components/ProductImage.tsx';
@@ -11,6 +13,10 @@ function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const { data: product, isLoading, isError, error, refetch } = useProduct(slug ?? '');
   const [quantity, setQuantity] = useState(1);
+  const { data: user } = useCurrentUser();
+  const addToBasket = useAddToBasket();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   if (isLoading) {
     return (
@@ -48,6 +54,20 @@ function ProductDetailPage() {
     if (Number.isNaN(value)) return;
     setQuantity(Math.min(Math.max(value, 1), stock));
   }
+
+  function handleAddToBasket() {
+    if (!product) return;
+    if (!user) {
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+    addToBasket.mutate({ productId: product.id, quantity });
+  }
+
+  const addError =
+    addToBasket.isError && addToBasket.error instanceof ApiError
+      ? addToBasket.error.message
+      : null;
 
   return (
     <div
@@ -117,15 +137,35 @@ function ProductDetailPage() {
 
           <button
             type="button"
-            // Phase 10 wires this up to the real basket mutation.
-            onClick={() => {}}
-            disabled={!inStock}
+            onClick={handleAddToBasket}
+            disabled={!inStock || addToBasket.isPending}
             data-testid="product-detail-add-button"
             className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {inStock ? 'Add to basket' : 'Out of stock'}
+            {inStock ? (addToBasket.isPending ? 'Adding…' : 'Add to basket') : 'Out of stock'}
           </button>
         </div>
+
+        {addToBasket.isSuccess && (
+          <div
+            data-testid="product-detail-add-success"
+            className="mt-3 text-sm text-green-700"
+          >
+            Added to basket.{' '}
+            <Link
+              to="/basket"
+              className="font-medium text-blue-600 hover:text-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+            >
+              View basket
+            </Link>
+          </div>
+        )}
+
+        {addError && (
+          <p data-testid="product-detail-add-error" className="mt-3 text-sm text-red-600">
+            {addError}
+          </p>
+        )}
       </div>
     </div>
   );

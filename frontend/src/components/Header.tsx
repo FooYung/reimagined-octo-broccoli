@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useCategories } from '../api/queries.ts';
 import { useCurrentUser, useLogout } from '../api/auth.ts';
+import { useBasket } from '../api/basket.ts';
 
 function Header() {
   const [search, setSearch] = useState('');
@@ -9,6 +10,8 @@ function Header() {
   const { data: categories } = useCategories();
   const { data: user, isLoading: isUserLoading } = useCurrentUser();
   const logout = useLogout();
+  const { data: basket } = useBasket();
+  const basketCount = basket?.items.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
 
   function handleLogout() {
     logout.mutate(undefined, {
@@ -59,12 +62,11 @@ function Header() {
             className="flex items-center gap-1 rounded text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
           >
             Basket
-            {/* Hardcoded to 0 until Phase 10 wires this up to the real basket. */}
             <span
               data-testid="header-basket-count"
               className="rounded-full bg-blue-600 px-2 py-0.5 text-xs"
             >
-              0
+              {basketCount}
             </span>
           </Link>
 

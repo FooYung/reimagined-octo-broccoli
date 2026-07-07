@@ -48,6 +48,46 @@ appended when the element repeats for each item in a list.
 | `product-detail-description`    | Product detail description                 |
 | `product-detail-qty-input`      | Product detail quantity input              |
 | `product-detail-add-button`     | Product detail add-to-basket button        |
+| `product-detail-add-success`    | Product detail add-to-basket success message |
+| `product-detail-add-error`      | Product detail add-to-basket error message |
+| `basket-page`                   | Basket page container (non-empty basket)   |
+| `basket-loading`                | Basket loading skeleton                    |
+| `basket-empty`                  | Basket empty-state container               |
+| `basket-empty-browse-link`      | Basket empty-state link to `/products`     |
+| `basket-item-{slug}`            | Basket item row for that product's slug    |
+| `basket-item-name-{slug}`       | Basket item link to `/products/{slug}`     |
+| `basket-item-decrease-{slug}`   | Basket item quantity decrease button       |
+| `basket-item-qty-{slug}`        | Basket item quantity display               |
+| `basket-item-increase-{slug}`   | Basket item quantity increase button       |
+| `basket-item-line-total-{slug}` | Basket item line total                     |
+| `basket-item-remove-{slug}`     | Basket item remove button                  |
+| `basket-item-error-{slug}`      | Basket item update-error message           |
+| `basket-item-unavailable-{slug}`| Basket item unavailable/out-of-stock badge |
+| `basket-total`                  | Basket page total                          |
+| `basket-checkout-link`          | Basket page link to `/checkout`            |
+| `checkout-page`                 | Checkout page container                    |
+| `checkout-loading`              | Checkout loading skeleton                  |
+| `checkout-summary`              | Checkout order summary container           |
+| `checkout-total`                | Checkout order summary total               |
+| `checkout-name-input`           | Checkout shipping name input               |
+| `checkout-name-error`           | Checkout shipping name field error         |
+| `checkout-line1-input`          | Checkout address line 1 input              |
+| `checkout-line1-error`          | Checkout address line 1 field error        |
+| `checkout-line2-input`          | Checkout address line 2 input              |
+| `checkout-line2-error`          | Checkout address line 2 field error        |
+| `checkout-city-input`           | Checkout city input                        |
+| `checkout-city-error`           | Checkout city field error                  |
+| `checkout-postcode-input`       | Checkout postcode input                    |
+| `checkout-postcode-error`       | Checkout postcode field error              |
+| `checkout-mock-payment`         | Checkout mock-payment notice box           |
+| `checkout-submit`               | Checkout place-order button                |
+| `checkout-stock-conflict`       | Checkout stock-conflict error box          |
+| `checkout-back-to-basket-link`  | Checkout stock-conflict link to `/basket`  |
+| `checkout-error`                | Checkout generic server-error message      |
+| `confirmation-page`             | Order confirmation page container          |
+| `confirmation-order-number`     | Order confirmation order number            |
+| `confirmation-total`            | Order confirmation total                   |
+| `confirmation-continue-link`    | Order confirmation link to `/products`     |
 
 Rules:
 

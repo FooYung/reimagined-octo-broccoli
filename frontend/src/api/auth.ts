@@ -50,8 +50,8 @@ export function useLogout() {
   return useMutation({
     mutationFn: () => apiFetch<void>('/auth/logout', { method: 'POST' }),
     onSuccess: () => {
-      // Basket cache invalidation arrives with Phase 10; leave catalogue caches alone.
       queryClient.setQueryData(['auth', 'me'], null);
+      queryClient.removeQueries({ queryKey: ['basket'] });
     },
   });
 }

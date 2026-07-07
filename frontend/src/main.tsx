@@ -12,6 +12,9 @@ import CataloguePage from './pages/CataloguePage.tsx';
 import ProductDetailPage from './pages/ProductDetailPage.tsx';
 import LoginPage from './pages/LoginPage.tsx';
 import RegisterPage from './pages/RegisterPage.tsx';
+import BasketPage from './pages/BasketPage.tsx';
+import CheckoutPage from './pages/CheckoutPage.tsx';
+import OrderConfirmationPage from './pages/OrderConfirmationPage.tsx';
 import NotFoundPage from './pages/NotFoundPage.tsx';
 
 const router = createBrowserRouter([
@@ -27,8 +30,9 @@ const router = createBrowserRouter([
       {
         element: <RequireAuth />,
         children: [
-          { path: 'basket', element: <PagePlaceholder title="Basket" /> },
-          { path: 'checkout', element: <PagePlaceholder title="Checkout" /> },
+          { path: 'basket', element: <BasketPage /> },
+          { path: 'checkout', element: <CheckoutPage /> },
+          { path: 'checkout/confirmation', element: <OrderConfirmationPage /> },
           { path: 'account', element: <PagePlaceholder title="Account" /> },
         ],
       },

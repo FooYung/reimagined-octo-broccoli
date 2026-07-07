@@ -21,7 +21,7 @@ Source spec: `Claude_PC_Hardware_Ecommerce_Portfolio_Spec.md` (same directory). 
 - [x] Phase 7 — Frontend: App Shell & Branding
 - [x] Phase 8 — Frontend: Auth Pages
 - [x] Phase 9 — Frontend: Catalogue Pages
-- [ ] Phase 10 — Frontend: Basket & Checkout
+- [x] Phase 10 — Frontend: Basket & Checkout
 - [ ] Phase 11 — Frontend: Customer Account & Order History
 - [ ] Phase 12 — Frontend: Admin CMS
 - [ ] Phase 13 — Error Handling & Edge-Case Pass
